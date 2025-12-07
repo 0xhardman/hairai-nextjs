@@ -1,36 +1,61 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# HairAI
+
+AI-powered hairstyle generator that transforms your look with realistic hairstyle previews.
+
+## Features
+
+- **Preset Styles**: Choose from 12 popular hairstyles (Buzz Cut, Bob, Pompadour, Afro, etc.)
+- **Custom Prompts**: Describe any hairstyle you can imagine
+- **AI Consultant**: Let AI analyze your face and recommend the perfect style
+- **Reference Mode**: Upload a celebrity or Pinterest hairstyle to transfer
+- **Variations**: Generate multiple variations of your chosen style
+- **Refinement**: Iteratively adjust the result with text prompts
+
+## AI Model
+
+This project uses **Google Gemini 2.5 Flash** (`gemini-2.5-flash-image`) for image generation:
+
+- High-quality photorealistic hairstyle transformations
+- Face preservation technology
+- Professional portrait-style output
+- Fast generation speed
+
+For face analysis and style recommendations, we use `gemini-2.0-flash`.
 
 ## Getting Started
 
-First, run the development server:
+1. Clone the repository
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Create `.env.local` with your Gemini API key:
+   ```
+   GEMINI_API_KEY=your_api_key_here
+   ```
+4. Run the development server:
+   ```bash
+   npm run dev
+   ```
+5. Open [http://localhost:3000](http://localhost:3000)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Tech Stack
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **Framework**: Next.js 15 (App Router)
+- **UI**: React 19 + Tailwind CSS 4
+- **AI**: Google Gemini API (@google/genai)
+- **Icons**: Lucide React
+- **Language**: TypeScript
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## API Routes
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Route | Description |
+|-------|-------------|
+| `/api/generate` | Generate hairstyle from text prompt |
+| `/api/generate-reference` | Transfer hairstyle from reference image |
+| `/api/analyze` | Analyze face and suggest hairstyle |
+| `/api/variations` | Generate 4 style variations |
 
-## Learn More
+## License
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT
