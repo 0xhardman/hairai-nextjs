@@ -1,5 +1,9 @@
 import { GoogleGenAI } from "@google/genai";
 import { NextRequest, NextResponse } from "next/server";
+import {
+  verifyPayment,
+  getPaymentRequiredResponse,
+} from "@/lib/verify-payment";
 
 const getClient = () => {
   const apiKey = process.env.GEMINI_API_KEY;
@@ -74,6 +78,16 @@ Constraints:
 
 export async function POST(request: NextRequest) {
   try {
+    // Verify payment
+    const paymentHeader = request.headers.get("X-Payment");
+    const paymentResult = verifyPayment(paymentHeader, "variations");
+
+    if (!paymentResult.valid) {
+      return NextResponse.json(getPaymentRequiredResponse("variations"), {
+        status: 402,
+      });
+    }
+
     const { image, prompt } = await request.json();
 
     if (!image || !prompt) {

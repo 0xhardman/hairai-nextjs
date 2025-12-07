@@ -14,6 +14,8 @@ import CustomPrompt from "@/components/CustomPrompt";
 import HairWizard from "@/components/HairWizard";
 import ReferenceMode from "@/components/ReferenceMode";
 import ResultDisplay from "@/components/ResultDisplay";
+import { WalletConnect } from "@/components/WalletConnect";
+import { usePayment } from "@/hooks/usePayment";
 import { Scissors, Grid, Wand2, UserCheck, ImagePlus } from "lucide-react";
 import { PRESET_STYLES } from "@/lib/constants";
 
@@ -31,6 +33,8 @@ export default function Home() {
   const [currentVariations, setCurrentVariations] = useState<string[]>([]);
 
   const [selectedPresetId, setSelectedPresetId] = useState<string | null>(null);
+
+  const { isConnected, signPayment, getPrice } = usePayment();
 
   const handleImageSelect = (base64: string) => {
     setUploadedImage(base64);
@@ -50,12 +54,18 @@ export default function Home() {
       return;
     }
 
+    if (!isConnected) {
+      setError("Please connect your wallet to generate hairstyles.");
+      return;
+    }
+
     setIsGenerating(true);
     setError(null);
     setCurrentVariations([]);
 
     try {
-      const resultImage = await generateHairstyle(uploadedImage, promptText);
+      const paymentHeader = await signPayment("generate");
+      const resultImage = await generateHairstyle(uploadedImage, promptText, paymentHeader);
       const newResult: GeneratedImage = {
         id: Date.now().toString(),
         timestamp: Date.now(),
@@ -76,14 +86,21 @@ export default function Home() {
   const handleGenerateFromReference = async (referenceImage: string) => {
     if (!uploadedImage) return;
 
+    if (!isConnected) {
+      setError("Please connect your wallet to generate hairstyles.");
+      return;
+    }
+
     setIsGenerating(true);
     setError(null);
     setCurrentVariations([]);
 
     try {
+      const paymentHeader = await signPayment("generateReference");
       const resultImage = await generateHairstyleFromReference(
         uploadedImage,
-        referenceImage
+        referenceImage,
+        paymentHeader
       );
       const newResult: GeneratedImage = {
         id: Date.now().toString(),
@@ -105,14 +122,21 @@ export default function Home() {
   const handleRefine = async (refinementPrompt: string) => {
     if (!generatedResult) return;
 
+    if (!isConnected) {
+      setError("Please connect your wallet to refine hairstyles.");
+      return;
+    }
+
     setIsGenerating(true);
     setError(null);
     setCurrentVariations([]);
 
     try {
+      const paymentHeader = await signPayment("generate");
       const resultImage = await generateHairstyle(
         generatedResult.generated,
-        refinementPrompt
+        refinementPrompt,
+        paymentHeader
       );
 
       const newResult: GeneratedImage = {
@@ -134,19 +158,28 @@ export default function Home() {
 
   const handleAnalyzeFace = async (): Promise<string> => {
     if (!uploadedImage) throw new Error("No image");
-    return await analyzeFaceAndSuggest(uploadedImage);
+    if (!isConnected) throw new Error("Please connect your wallet first");
+    const paymentHeader = await signPayment("analyze");
+    return await analyzeFaceAndSuggest(uploadedImage, paymentHeader);
   };
 
   const handleGenerateVariations = async () => {
     if (!generatedResult) return;
 
+    if (!isConnected) {
+      setError("Please connect your wallet to generate variations.");
+      return;
+    }
+
     setIsGeneratingVariations(true);
     setError(null);
 
     try {
+      const paymentHeader = await signPayment("variations");
       const variations = await generateHairstyleVariations(
         generatedResult.original,
-        generatedResult.promptUsed
+        generatedResult.promptUsed,
+        paymentHeader
       );
 
       if (variations.length === 0) {
@@ -217,14 +250,17 @@ export default function Home() {
               HairAI
             </span>
           </div>
-          {uploadedImage && (
-            <button
-              onClick={resetAll}
-              className="text-xs font-medium text-neutral-400 hover:text-neutral-900 transition-colors"
-            >
-              Reset
-            </button>
-          )}
+          <div className="flex items-center gap-4">
+            {uploadedImage && (
+              <button
+                onClick={resetAll}
+                className="text-xs font-medium text-neutral-400 hover:text-neutral-900 transition-colors"
+              >
+                Reset
+              </button>
+            )}
+            <WalletConnect />
+          </div>
         </div>
       </header>
 
