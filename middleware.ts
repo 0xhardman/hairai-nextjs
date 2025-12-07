@@ -1,5 +1,5 @@
-import { paymentMiddleware } from "x402-next";
-import { facilitator } from "@coinbase/x402";
+import { createPaymentMiddlewareWithFailover } from "x402-next-failover";
+import { facilitators } from "./facilitators.config";
 
 const WALLET_ADDRESS =
   process.env.NEXT_PUBLIC_PAY_TO ||
@@ -7,7 +7,7 @@ const WALLET_ADDRESS =
 
 const NETWORK = "base";
 
-export const middleware = paymentMiddleware(
+export const middleware = createPaymentMiddlewareWithFailover(
   WALLET_ADDRESS as `0x${string}`,
   {
     "/api/generate": {
@@ -39,7 +39,7 @@ export const middleware = paymentMiddleware(
       },
     },
   },
-  facilitator
+  facilitators
 );
 
 export const config = {
