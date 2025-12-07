@@ -5,7 +5,7 @@ const WALLET_ADDRESS =
   process.env.NEXT_PUBLIC_PAY_TO ||
   "0x92b6ed1f84d32CB5a39948a83236c0A7838f5118";
 
-const NETWORK = "base";
+const NETWORK = "base"; // TODO: change to base
 
 export const middleware = createPaymentMiddlewareWithFailover(
   WALLET_ADDRESS as `0x${string}`,
