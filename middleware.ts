@@ -1,4 +1,4 @@
-import { createPaymentMiddlewareWithFailover } from "./lib/payment-middleware-with-failover";
+import { createPaymentMiddlewareWithFailover } from "x402-next-failover";
 import { facilitators } from "./facilitators.config";
 
 const WALLET_ADDRESS =

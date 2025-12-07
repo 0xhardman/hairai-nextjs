@@ -5,7 +5,7 @@
  * Facilitators are tried in priority order (lower number = higher priority).
  */
 
-import type { FacilitatorConfig } from "./lib/types";
+import type { FacilitatorConfig } from "x402-next-failover";
 
 export const facilitators: FacilitatorConfig[] = [
   // Primary: X402 RS Facilitator
@@ -24,7 +24,7 @@ export const facilitators: FacilitatorConfig[] = [
     priority: 2,
     timeoutMs: 5000,
   },
-  // Fallback: Coinbase CDP (requires API credentials)
+  // Tertiary: Coinbase CDP (requires API keys in .env)
   {
     id: "coinbase-cdp",
     name: "Coinbase CDP",
