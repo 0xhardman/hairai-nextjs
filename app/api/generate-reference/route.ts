@@ -1,9 +1,5 @@
 import { GoogleGenAI } from "@google/genai";
 import { NextRequest, NextResponse } from "next/server";
-import {
-  verifyPayment,
-  getPaymentRequiredResponse,
-} from "@/lib/verify-payment";
 
 const getClient = () => {
   const apiKey = process.env.GEMINI_API_KEY;
@@ -28,18 +24,9 @@ const extractImageFromResponse = (response: any): string => {
   throw new Error("No image generated in the response.");
 };
 
+// Payment verification is handled by x402-next middleware
 export async function POST(request: NextRequest) {
   try {
-    // Verify payment
-    const paymentHeader = request.headers.get("X-Payment");
-    const paymentResult = verifyPayment(paymentHeader, "generateReference");
-
-    if (!paymentResult.valid) {
-      return NextResponse.json(getPaymentRequiredResponse("generateReference"), {
-        status: 402,
-      });
-    }
-
     const { userImage, referenceImage } = await request.json();
 
     if (!userImage || !referenceImage) {
