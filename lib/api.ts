@@ -1,19 +1,10 @@
 export async function generateHairstyle(
   base64Image: string,
-  prompt: string,
-  paymentHeader?: string
+  prompt: string
 ): Promise<string> {
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  };
-
-  if (paymentHeader) {
-    headers["X-Payment"] = paymentHeader;
-  }
-
   const response = await fetch("/api/generate", {
     method: "POST",
-    headers,
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ image: base64Image, prompt }),
   });
 
@@ -28,20 +19,11 @@ export async function generateHairstyle(
 
 export async function generateHairstyleFromReference(
   userImage: string,
-  referenceImage: string,
-  paymentHeader?: string
+  referenceImage: string
 ): Promise<string> {
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  };
-
-  if (paymentHeader) {
-    headers["X-Payment"] = paymentHeader;
-  }
-
   const response = await fetch("/api/generate-reference", {
     method: "POST",
-    headers,
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ userImage, referenceImage }),
   });
 
@@ -55,20 +37,11 @@ export async function generateHairstyleFromReference(
 }
 
 export async function analyzeFaceAndSuggest(
-  base64Image: string,
-  paymentHeader?: string
+  base64Image: string
 ): Promise<string> {
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  };
-
-  if (paymentHeader) {
-    headers["X-Payment"] = paymentHeader;
-  }
-
   const response = await fetch("/api/analyze", {
     method: "POST",
-    headers,
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ image: base64Image }),
   });
 
@@ -83,20 +56,11 @@ export async function analyzeFaceAndSuggest(
 
 export async function generateHairstyleVariations(
   base64Image: string,
-  prompt: string,
-  paymentHeader?: string
+  prompt: string
 ): Promise<string[]> {
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  };
-
-  if (paymentHeader) {
-    headers["X-Payment"] = paymentHeader;
-  }
-
   const response = await fetch("/api/variations", {
     method: "POST",
-    headers,
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ image: base64Image, prompt }),
   });
 

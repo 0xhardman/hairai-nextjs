@@ -14,8 +14,6 @@ import CustomPrompt from "@/components/CustomPrompt";
 import HairWizard from "@/components/HairWizard";
 import ReferenceMode from "@/components/ReferenceMode";
 import ResultDisplay from "@/components/ResultDisplay";
-import { WalletConnect } from "@/components/WalletConnect";
-import { usePayment } from "@/hooks/usePayment";
 import { Scissors, Grid, Wand2, UserCheck, ImagePlus } from "lucide-react";
 import { PRESET_STYLES } from "@/lib/constants";
 
@@ -33,8 +31,6 @@ export default function Home() {
   const [currentVariations, setCurrentVariations] = useState<string[]>([]);
 
   const [selectedPresetId, setSelectedPresetId] = useState<string | null>(null);
-
-  const { isConnected, signPayment, getPrice } = usePayment();
 
   const handleImageSelect = (base64: string) => {
     setUploadedImage(base64);
@@ -54,18 +50,12 @@ export default function Home() {
       return;
     }
 
-    if (!isConnected) {
-      setError("Please connect your wallet to generate hairstyles.");
-      return;
-    }
-
     setIsGenerating(true);
     setError(null);
     setCurrentVariations([]);
 
     try {
-      const paymentHeader = await signPayment("generate");
-      const resultImage = await generateHairstyle(uploadedImage, promptText, paymentHeader);
+      const resultImage = await generateHairstyle(uploadedImage, promptText);
       const newResult: GeneratedImage = {
         id: Date.now().toString(),
         timestamp: Date.now(),
@@ -86,21 +76,14 @@ export default function Home() {
   const handleGenerateFromReference = async (referenceImage: string) => {
     if (!uploadedImage) return;
 
-    if (!isConnected) {
-      setError("Please connect your wallet to generate hairstyles.");
-      return;
-    }
-
     setIsGenerating(true);
     setError(null);
     setCurrentVariations([]);
 
     try {
-      const paymentHeader = await signPayment("generateReference");
       const resultImage = await generateHairstyleFromReference(
         uploadedImage,
-        referenceImage,
-        paymentHeader
+        referenceImage
       );
       const newResult: GeneratedImage = {
         id: Date.now().toString(),
@@ -122,21 +105,14 @@ export default function Home() {
   const handleRefine = async (refinementPrompt: string) => {
     if (!generatedResult) return;
 
-    if (!isConnected) {
-      setError("Please connect your wallet to refine hairstyles.");
-      return;
-    }
-
     setIsGenerating(true);
     setError(null);
     setCurrentVariations([]);
 
     try {
-      const paymentHeader = await signPayment("generate");
       const resultImage = await generateHairstyle(
         generatedResult.generated,
-        refinementPrompt,
-        paymentHeader
+        refinementPrompt
       );
 
       const newResult: GeneratedImage = {
@@ -158,28 +134,19 @@ export default function Home() {
 
   const handleAnalyzeFace = async (): Promise<string> => {
     if (!uploadedImage) throw new Error("No image");
-    if (!isConnected) throw new Error("Please connect your wallet first");
-    const paymentHeader = await signPayment("analyze");
-    return await analyzeFaceAndSuggest(uploadedImage, paymentHeader);
+    return await analyzeFaceAndSuggest(uploadedImage);
   };
 
   const handleGenerateVariations = async () => {
     if (!generatedResult) return;
 
-    if (!isConnected) {
-      setError("Please connect your wallet to generate variations.");
-      return;
-    }
-
     setIsGeneratingVariations(true);
     setError(null);
 
     try {
-      const paymentHeader = await signPayment("variations");
       const variations = await generateHairstyleVariations(
         generatedResult.original,
-        generatedResult.promptUsed,
-        paymentHeader
+        generatedResult.promptUsed
       );
 
       if (variations.length === 0) {
@@ -259,7 +226,6 @@ export default function Home() {
                 Reset
               </button>
             )}
-            <WalletConnect />
           </div>
         </div>
       </header>
